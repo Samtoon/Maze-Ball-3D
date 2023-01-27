@@ -5,6 +5,7 @@ console.log("hola");
 
 const canvas = document.querySelector('#canvas'); //Get document's canvas
 const renderer = new THREE.WebGLRenderer({ canvas: canvas });
+renderer.setSize(window.innerWidth, window.innerHeight);
 const camera = createCamera();
 camera.position.z = 2;
 const scene = new THREE.Scene();
@@ -18,7 +19,7 @@ scene.add(cube);
 requestAnimationFrame(render); //Animate cube
 
 function render(time) {
-    time *= 0.001
+    time *= 0.001;
     cube.rotation.x = time;
     cube.rotation.y = time;
     renderer.render(scene, camera);
@@ -27,7 +28,7 @@ function render(time) {
 
 function createCamera() {
     const fov = 75;
-    const aspect = 2;
+    const aspect = window.innerWidth / window.innerHeight;
     const near = 0.1;
     const far = 5;
     return new THREE.PerspectiveCamera(fov, aspect, near, far);
