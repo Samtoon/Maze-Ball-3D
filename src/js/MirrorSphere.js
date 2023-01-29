@@ -21,7 +21,12 @@ export default class MirrorSphere {
     const mirrorSphereMaterial = new MeshBasicMaterial({ envMap: cubeRenderTarget.texture });
 
     // Color sphere material.
-    const material = new MeshPhongMaterial({ color: color, transparent: true, opacity: opacity });
+    const material = new MeshPhongMaterial({
+      color: color,
+      specular: color,
+      transparent: true,
+      opacity: opacity
+    });
 
     // Sphere Geometry.
     const geometry = new IcosahedronGeometry(size, 10);
