@@ -2,6 +2,7 @@ import {
   WebGLRenderer,
   PerspectiveCamera,
   Scene,
+  CubeTextureLoader,
   BoxGeometry,
   MeshPhongMaterial,
   Mesh,
@@ -17,15 +18,33 @@ function createRenderer() {
   return renderer
 }
 
-function createCamera(fov = 75, near = 0.1, far = 5) {
+function createCamera(position = { x: 0, y: 0, z: 0 }, fov = 75, near = 0.1, far = 5) {
   const aspect = window.innerWidth / window.innerHeight;
   const camera = new PerspectiveCamera(fov, aspect, near, far);
-  camera.position.z = 2;
+  camera.position.x = position.x;
+  camera.position.y = position.y;
+  camera.position.z = position.z;
   return camera
 }
 
 function createScene() {
   return new Scene()
+}
+
+function createBgCube() {
+  // Textures cube
+  const textures = [
+    'https://assets.codepen.io/911796/px.jpeg',
+    'https://assets.codepen.io/911796/nx.jpeg',
+    'https://assets.codepen.io/911796/py.jpeg',
+    'https://assets.codepen.io/911796/ny.jpeg',
+    'https://assets.codepen.io/911796/pz.jpeg',
+    'https://assets.codepen.io/911796/nz.jpeg'
+  ];
+  const cubeLoader = new CubeTextureLoader();
+  const cubeTexture = cubeLoader.load(textures);
+
+  return cubeTexture
 }
 
 function createCube(boxWidth = 1, boxHeight = 1, boxDepth = 1, materialConfig = { color: 0x44aa88 }) {
@@ -36,6 +55,10 @@ function createCube(boxWidth = 1, boxHeight = 1, boxDepth = 1, materialConfig = 
   return new Mesh(geometry, material);
 }
 
+function createSphere() {
+
+}
+
 function createLight(color = 0xFFFFFF, intensity = 1, posX = -1, posY = 2, posZ = 4) {
   const light = new DirectionalLight(color, intensity);
   light.position.set(posX, posY, posZ);
@@ -43,4 +66,4 @@ function createLight(color = 0xFFFFFF, intensity = 1, posX = -1, posY = 2, posZ 
   return light
 }
 
-export { createCamera, createCube, createLight, createRenderer, createScene }
+export { createCamera, createCube, createLight, createRenderer, createScene, createBgCube }
