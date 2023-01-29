@@ -10,7 +10,7 @@ import {
 } from "/node_modules/three/build/three.module.js";
 
 function createRenderer() {
-  //Get document's canvas
+  //Get document's canvas.
   const canvas = document.querySelector('#canvas');
   const renderer = new WebGLRenderer({ canvas: canvas });
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -32,7 +32,7 @@ function createScene() {
 }
 
 function createBgCube() {
-  // Textures cube
+  // Textures for the bg cube.
   const textures = [
     'https://assets.codepen.io/911796/px.jpeg',
     'https://assets.codepen.io/911796/nx.jpeg',
@@ -41,6 +41,7 @@ function createBgCube() {
     'https://assets.codepen.io/911796/pz.jpeg',
     'https://assets.codepen.io/911796/nz.jpeg'
   ];
+
   const cubeLoader = new CubeTextureLoader();
   const cubeTexture = cubeLoader.load(textures);
 
@@ -51,7 +52,7 @@ function createCube(boxWidth = 1, boxHeight = 1, boxDepth = 1, materialConfig = 
   const geometry = new BoxGeometry(boxWidth, boxHeight, boxDepth);
   const material = new MeshPhongMaterial(materialConfig);
 
-  //Meshes need both a geometry and a material
+  //Meshes need both a geometry and a material.
   return new Mesh(geometry, material);
 }
 

@@ -7,11 +7,11 @@ import {
   createBgCube
 } from "/src/js/initialize.js";
 
-import * as THREE from "/node_modules/three/build/three.module.js";
+import MirrorSphere from "/src/js/MirrorSphere.js";
 
 import { OrbitControls } from 'https://cdn.skypack.dev/three@0.136/examples/jsm/controls/OrbitControls.js';
 
-let renderer, scene, camera, cube, sphere, sphere2, mirrorSphereCamera;
+let renderer, scene, camera, cube, sphere;
 
 function init() {
   scene = createScene();
@@ -27,32 +27,16 @@ function init() {
   cube = createCube();
 
   // Sphere
-  const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(1024);
-  mirrorSphereCamera = new THREE.CubeCamera(0.05, 50, cubeRenderTarget);
-  scene.add(mirrorSphereCamera);
-  const mirrorSphereMaterial = new THREE.MeshBasicMaterial({ envMap: cubeRenderTarget.texture });
-
-  const geometry = new THREE.IcosahedronGeometry(2, 10);
-  const sphereMaterial = new THREE.MeshLambertMaterial({ envMap: bgCube });
-  sphere = new THREE.Mesh(geometry, mirrorSphereMaterial);
-
-  const geometry2 = new THREE.IcosahedronGeometry(2, 10);
-  const material = new THREE.MeshPhongMaterial({ color: 0x00FFFF });
-  sphere2 = new THREE.Mesh(geometry2, material);
-
-  sphere2.material.transparent = true
-  sphere2.material.opacity = 0.5
-
-  sphere.position.x = 5;
+  sphere = new MirrorSphere(scene);
 
   const light = createLight();
 
   const orbitControls = new OrbitControls(camera, renderer.domElement);
 
-  scene.add(sphere);
-  scene.add(sphere2);
   scene.add(light);
   scene.add(cube);
+
+  console.log(sphere);
 }
 
 function animate(time) {
@@ -60,12 +44,7 @@ function animate(time) {
   cube.rotation.x = time;
   cube.rotation.y = time;
 
-  sphere2.position.x = sphere.position.x;
-  sphere2.position.y = sphere.position.y;
-  sphere2.position.z = sphere.position.z;
-
-  sphere.getWorldPosition(mirrorSphereCamera.position);
-  mirrorSphereCamera.update(renderer, scene);
+  sphere.update(renderer, scene);
 
   renderer.render(scene, camera);
 
