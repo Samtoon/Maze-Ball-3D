@@ -29,14 +29,14 @@ function init() {
   // Sphere
   sphere = new MirrorSphere(scene);
 
+  sphere.position = { x: 5, y: 0, z: 0 };
+
   const light = createLight();
 
   const orbitControls = new OrbitControls(camera, renderer.domElement);
 
   scene.add(light);
   scene.add(cube);
-
-  console.log(sphere);
 }
 
 function animate(time) {
@@ -55,5 +55,16 @@ init();
 animate();
 
 document.onkeydown = evt => {
-  console.log(evt.key);
+  if (evt.key === 'd') {
+    sphere.position.x += 0.1;
+  }
+  if (evt.key === 'a') {
+    sphere.position.x -= 0.1;
+  }
+  if (evt.key === 'w') {
+    sphere.position.y += 0.1;
+  }
+  if (evt.key === 's') {
+    sphere.position.y -= 0.1;
+  }
 }
