@@ -10,7 +10,7 @@ function initPhysicsWorld() {
     tmpTransformation = new Ammo.btTransform();
     defaultSphereShape = new Ammo.btSphereShape(1);
     defaultBoxShape = new Ammo.btBoxShape(new Ammo.btVector3(0.5, 0.5, 0.5));
-    defaultGroundShape = new Ammo.btBoxShape(new Ammo.btVector3(10, 1, 10))
+    defaultMazeShape = new Ammo.btBoxShape(new Ammo.btVector3(10, 1, 10));
     console.log("oh yes");
     const collisionConfiguration = new Ammo.btDefaultCollisionConfiguration(),
         dispatcher = new Ammo.btCollisionDispatcher(collisionConfiguration),
@@ -22,7 +22,7 @@ function initPhysicsWorld() {
 }
 
 function updatePhysicsWorld(deltaTime) {
-    console.log("delta es " + deltaTime);
+    //console.log("delta es " + deltaTime);
     physicsWorld.stepSimulation(deltaTime, 1000);
     for (let i = 0; i < rigidBodies.length; i++) {
         const graphicsObj = rigidBodies[i];
@@ -31,13 +31,13 @@ function updatePhysicsWorld(deltaTime) {
         if (motionState) {
             motionState.getWorldTransform(tmpTransformation);
             let new_pos = tmpTransformation.getOrigin();
-            console.log("pos es " + new_pos.y());
+            //console.log("pos es " + new_pos.y());
             let new_qua = tmpTransformation.getRotation();
-            console.log("qua es " + new_qua);
+            //console.log("qua es " + new_qua);
             graphicsObj.position.set(new_pos.x(), new_pos.y(), new_pos.z());
             graphicsObj.quaternion.set(new_qua.x(), new_qua.y(), new_qua.z(), new_qua.w());
         }
-        console.log("mi masa es " + physicsObj)
+        //console.log("mi masa es " + physicsObj)
     }
 }
 
@@ -71,6 +71,7 @@ class RigidBody {
         this.body = new Ammo.btRigidBody(this.info);
         const restitution = mass > 0 ? 0.5 : 0.09;
         this.body.setRestitution(restitution);
+        this.body.setFriction(10);
 
         physicsWorld.addRigidBody(this.body);
         mesh.userData.physicsBody = this.body;

@@ -2,8 +2,7 @@
 import * as THREE from "./node_modules/three/build/three.module.js";
 import { RigidBody, updatePhysicsWorld, rigidBodies, initPhysicsWorld } from "./Physics World.js";
 import { OrbitControls } from 'https://cdn.skypack.dev/three@0.136/examples/jsm/controls/OrbitControls.js';
-
-console.log("oh no");
+console.log(values);
 Ammo().then(main);
 let physicsWorld;
 let scene;
