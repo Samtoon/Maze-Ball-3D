@@ -3,7 +3,9 @@ import {
   PerspectiveCamera,
   Scene,
   CubeTextureLoader,
+  TextureLoader,
   BoxGeometry,
+  MeshBasicMaterial,
   MeshPhongMaterial,
   Mesh,
   DirectionalLight
@@ -34,13 +36,22 @@ function createScene() {
 function createBgCube() {
   // Textures for the bg cube.
   const textures = [
-    'https://assets.codepen.io/911796/px.jpeg',
-    'https://assets.codepen.io/911796/nx.jpeg',
-    'https://assets.codepen.io/911796/py.jpeg',
-    'https://assets.codepen.io/911796/ny.jpeg',
-    'https://assets.codepen.io/911796/pz.jpeg',
-    'https://assets.codepen.io/911796/nz.jpeg'
+    '/src/textures/cubemap/posx.jpg',
+    '/src/textures/cubemap/negx.jpg',
+    '/src/textures/cubemap/posy.jpg',
+    '/src/textures/cubemap/negy.jpg',
+    '/src/textures/cubemap/posz.jpg',
+    '/src/textures/cubemap/negz.jpg'
   ];
+
+  // const textures = [
+  //   'https://assets.codepen.io/911796/px.jpeg',
+  //   'https://assets.codepen.io/911796/nx.jpeg',
+  //   'https://assets.codepen.io/911796/py.jpeg',
+  //   'https://assets.codepen.io/911796/ny.jpeg',
+  //   'https://assets.codepen.io/911796/pz.jpeg',
+  //   'https://assets.codepen.io/911796/nz.jpeg'
+  // ];
 
   const cubeLoader = new CubeTextureLoader();
   const cubeTexture = cubeLoader.load(textures);
@@ -51,9 +62,11 @@ function createBgCube() {
 function createCube(boxWidth = 1, boxHeight = 1, boxDepth = 1, materialConfig = { color: 0x44aa88 }) {
   const geometry = new BoxGeometry(boxWidth, boxHeight, boxDepth);
   const material = new MeshPhongMaterial(materialConfig);
+  const texture = new TextureLoader().load('/src/textures/crate.gif');
+  const textMaterial = new MeshBasicMaterial({ map: texture });
 
   //Meshes need both a geometry and a material.
-  return new Mesh(geometry, material);
+  return new Mesh(geometry, textMaterial);
 }
 
 function createSphere() {
