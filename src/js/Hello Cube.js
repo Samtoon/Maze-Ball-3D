@@ -22,8 +22,6 @@ function init() {
 
   scene.background = bgCube;
 
-  renderer.render(scene, camera);
-
   cube = createCube();
 
   // Sphere
@@ -37,6 +35,8 @@ function init() {
 
   scene.add(light);
   scene.add(cube);
+
+  renderer.render(scene, camera);
 }
 
 function animate(time) {
