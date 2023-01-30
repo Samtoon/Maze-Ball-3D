@@ -120,6 +120,7 @@ function initGraphicsWorld() {
     scene.add(directionalLight);
     const helper = new THREE.CameraHelper(camera);
     scene.add(helper);
+    scene.background = createBgCube();
     renderer.render(scene, camera);
     controls = new OrbitControls(camera, renderer.domElement);
 }
@@ -154,4 +155,21 @@ function createSphere(pos, radius) {
     newSphere.receiveShadow = true;
     scene.add(newSphere);
     return newSphere;
+}
+
+function createBgCube() {
+    // Textures for the bg cube.
+    const textures = [
+        '/src/textures/cubemap/posx.jpg',
+        '/src/textures/cubemap/negx.jpg',
+        '/src/textures/cubemap/posy.jpg',
+        '/src/textures/cubemap/negy.jpg',
+        '/src/textures/cubemap/posz.jpg',
+        '/src/textures/cubemap/negz.jpg'
+    ];
+
+    const cubeLoader = new THREE.CubeTextureLoader();
+    const cubeTexture = cubeLoader.load(textures);
+
+    return cubeTexture
 }

@@ -26,7 +26,8 @@ function createMaze() {
     const maze = new THREE.Mesh(mazeGeom, mazeMaterial);
     maze.add(goal);
     const wallGeom = new THREE.BoxBufferGeometry(1, 1, 1,);
-    const wallMaterial = new THREE.MeshPhongMaterial({ color: Math.random() * 0xffffff });
+    const wallTexture = new THREE.TextureLoader().load('/src/textures/crate.gif');
+    const wallMaterial = new THREE.MeshBasicMaterial({ map: wallTexture });
     const startPoint = { x: 0, y: 0, z: 0 };
 
     for (let j = 0; j < mazeHeight; j++) {
