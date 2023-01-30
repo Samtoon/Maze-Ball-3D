@@ -2,7 +2,9 @@
 import * as THREE from "./node_modules/three/build/three.module.js";
 import { RigidBody, updatePhysicsWorld, rigidBodies, initPhysicsWorld } from "./Physics World.js";
 import { OrbitControls } from 'https://cdn.skypack.dev/three@0.136/examples/jsm/controls/OrbitControls.js';
-console.log(values);
+import { createMaze, walls, goal } from "./Maze.js";
+
+
 Ammo().then(main);
 let physicsWorld;
 let scene;
@@ -10,30 +12,102 @@ let camera;
 let renderer;
 let clock;
 let controls;
+let ball;
 let tmpTransformation;
+let ground;
+const rotationSpeed = 0.05;
+let dPressed = false,
+aPressed = false,
+wPressed = false,
+sPressed = false;
 function main() {
     initPhysicsWorld();
     initGraphicsWorld();
     tmpTransformation = new Ammo.btTransform();
-    const cube = createBox({ x: 0, y: 3, z: 0 }, { x: 1, y: 1, z: 1 });
-    new RigidBody(cube, "box", 1);
     //rbCube.createBox(1, { x: 0, y: 3, z: 0 }, { x: 1, y: 1, z: 1 });
-    const ground = createBox({ x: 0, y: -5, z: 0 }, { x: 20, y: 2, z: 20 });
-    new RigidBody(ground, "ground", 0);
-    const ball = createSphere({ x: 0, y: 5, z: 0 }, 1);
+    ball = createSphere({ x: 0, y: 15, z: 0 }, 0.2);
+    
     new RigidBody(ball, "sphere", 1);
-    const ball2 = createSphere({ x: 0, y: 7, z: 0 }, 1);
-    new RigidBody(ball2, "sphere", 1);
+    ground = createMaze();
+    scene.add(ground);
+    for (let i = 0; i < walls.length; i++) {
+        new RigidBody(walls[i], "box", 0);
+    }
+    new RigidBody(ground, "ground", 0);
     //rbGround.createBox(0, { x: 0, y: -5, z: 0 }, { x: 20, y: 2, z: 20 });
     requestAnimationFrame(render);
+
+    document.onkeydown = evt => {
+        if (evt.key === 'd') {
+            dPressed = true;
+        }
+        if (evt.key === 'a') {
+            aPressed = true;
+        }
+        if (evt.key === 'w') {
+            wPressed = true;
+        }
+        if (evt.key === 's') {
+            sPressed = true;
+        }
+      }
+      document.onkeyup = evt => {
+        if (evt.key === 'd') {
+            dPressed = false;
+        }
+        if (evt.key === 'a') {
+            aPressed = false;
+        }
+        if (evt.key === 'w') {
+            wPressed = false;
+        }
+        if (evt.key === 's') {
+            sPressed = false;
+        }
+      }
+}
+
+function rotate() {
+    if (dPressed) {
+        //ground.rotation.x += rotationSpeed;
+        ground.rotateX(rotationSpeed);
+    }
+    if (aPressed) {
+        //ground.rotation.x -= rotationSpeed;
+        ground.rotateX(-rotationSpeed);
+    }
+    if (sPressed) {
+        //ground.rotation.z -= rotationSpeed;
+        ground.rotateZ(rotationSpeed);
+    }
+    if (wPressed) {
+        //ground.rotation.z += rotationSpeed;
+        ground.rotateZ(-rotationSpeed);
+    }
+}
+
+function win() {
+    const vector = new THREE.Vector3();
+    goal.getWorldPosition(vector);
+    var dx = vector.x - ball.position.x;
+    var dy = vector.y - ball.position.y;
+    var dz = vector.z - ball.position.z;
+
+    const distance = Math.sqrt( dx * dx + dy * dy + dz * dz );
+    if (distance < 1) {
+        alert("victory");
+        goal.position.x = -100;
+        goal.position.y = -100;
+        goal.position.z = -100;
+    }
 }
 
 function initGraphicsWorld() {
     clock = new THREE.Clock();
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
-    camera.position.set(-25, 20, -25);
-    camera.lookAt(new THREE.Vector3(0, 7, 0));
+    camera.position.set(0, 20, 0);
+    camera.lookAt(new THREE.Vector3(0, 0, 0));
     const canvas = document.querySelector('#canvas'); //Get document's canvas
     renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: false });
     renderer.setPixelRatio(window.devicePixelRatio);
@@ -52,9 +126,11 @@ function initGraphicsWorld() {
 
 function render() {
     const deltaTime = clock.getDelta();
-    updatePhysicsWorld(deltaTime);
+    updatePhysicsWorld(deltaTime, ground);
     renderer.render(scene, camera);
     controls.update();
+    rotate();
+    win();
     requestAnimationFrame(render);
 
 }

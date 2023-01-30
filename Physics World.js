@@ -1,16 +1,22 @@
+import * as THREE from "./node_modules/three/build/three.module.js";
 let physicsWorld;
 const rigidBodies = [];
+const kinematicBodies = [];
 let defaultBoxShape;
 let defaultSphereShape;
 let defaultGroundShape;
+let defaultMazeShape;
 let tmpTransformation;
+let ground;
 
 function initPhysicsWorld() {
     console.log("called");
     tmpTransformation = new Ammo.btTransform();
-    defaultSphereShape = new Ammo.btSphereShape(1);
+    defaultSphereShape = new Ammo.btSphereShape(0.2);
     defaultBoxShape = new Ammo.btBoxShape(new Ammo.btVector3(0.5, 0.5, 0.5));
-    defaultMazeShape = new Ammo.btBoxShape(new Ammo.btVector3(10, 1, 10));
+    defaultGroundShape = new Ammo.btBoxShape(new Ammo.btVector3(20 * 0.5, 2 * 0.5, 20 * 0.5));
+    defaultBoxShape.setMargin(0.05);
+    defaultMazeShape = new Ammo.btCompoundShape(true);
     console.log("oh yes");
     const collisionConfiguration = new Ammo.btDefaultCollisionConfiguration(),
         dispatcher = new Ammo.btCollisionDispatcher(collisionConfiguration),
@@ -21,7 +27,7 @@ function initPhysicsWorld() {
     physicsWorld.setGravity(new Ammo.btVector3(0, -10, 0));
 }
 
-function updatePhysicsWorld(deltaTime) {
+function updatePhysicsWorld(deltaTime, ground) {
     //console.log("delta es " + deltaTime);
     physicsWorld.stepSimulation(deltaTime, 1000);
     for (let i = 0; i < rigidBodies.length; i++) {
@@ -39,6 +45,47 @@ function updatePhysicsWorld(deltaTime) {
         }
         //console.log("mi masa es " + physicsObj)
     }
+    for (let i = 0; i < kinematicBodies.length; i++) {
+        const vector = new THREE.Vector3();
+        const quaternion = new THREE.Quaternion();
+        kinematicBodies[i].getWorldPosition(vector);
+        kinematicBodies[i].getWorldQuaternion(quaternion);
+        if (i == 0) {
+            console.log("el primero es " + vector.x);
+            console.log("el primero es quaternion " + quaternion.x);
+        }
+        
+        const physicsObj = kinematicBodies[i].userData.physicsBody;
+    let motionState = physicsObj.getMotionState();
+    const myTransform = new Ammo.btTransform();
+    myTransform.setOrigin(new Ammo.btVector3(vector.x, vector.y, vector.z));
+    myTransform.setRotation(new Ammo.btQuaternion(quaternion.x, quaternion.y, quaternion.z, ground.quaternion.w));
+    motionState.setWorldTransform(myTransform);
+    physicsObj.setMotionState(motionState);
+    }
+    
+}
+
+function addGroundShape(size) {
+    const myTransform = new Ammo.btTransform();
+    defaultGroundShape = new Ammo.btBoxShape(new Ammo.btVector3(size.x * 0.5, size.y * 0.5, size.z * 0.5));
+    defaultGroundShape.setMargin(0.05)
+    myTransform.setOrigin(new Ammo.btVector3(0, 0, 0));
+    defaultMazeShape.addChildShape(myTransform, defaultGroundShape);
+}
+
+function addWallShape(pos) {
+    console.log(`position received: x ${pos.x}, y ${pos.y}, z ${pos.z}`);
+    const myTransform = new Ammo.btTransform();
+    myTransform.setOrigin(new Ammo.btVector3(pos.x, pos.y, pos.z));
+    const box = new Ammo.btBoxShape(new Ammo.btVector3(0.5, 0.5, 0.5));
+    defaultMazeShape.addChildShape(myTransform, box);
+    //console.log("our object is " + defaultMazeShape.addChildShape);
+    const objs = defaultMazeShape.getNumChildShapes();
+    console.log("local scaling is " + defaultMazeShape.getLocalScaling().x() + ", " + defaultMazeShape.getLocalScaling().y() + ", " + defaultMazeShape.getLocalScaling().z());
+    for (let i = 0; i < objs; i++) {
+        //console.log("this is " + defaultMazeShape.getChildTransform(i).getOrigin().x());
+    }
 }
 
 class RigidBody {
@@ -46,6 +93,7 @@ class RigidBody {
 
         this.transform = new Ammo.btTransform();
         this.transform.setIdentity();
+        console.log();
         this.transform.setOrigin(new Ammo.btVector3(mesh.position.x, mesh.position.y, mesh.position.z));
         this.transform.setRotation(new Ammo.btQuaternion(quat.x, quat.y, quat.z, quat.w));
         this.motionState = new Ammo.btDefaultMotionState(this.transform);
@@ -75,8 +123,14 @@ class RigidBody {
 
         physicsWorld.addRigidBody(this.body);
         mesh.userData.physicsBody = this.body;
-        rigidBodies.push(mesh);
+        if (mass > 0) {
+            rigidBodies.push(mesh);
+        } else { 
+            kinematicBodies.push(mesh);
+        }
+        
+        //console.log("am i compound " + defaultMazeShape.isCompound());
     }
 }
 
-export { RigidBody, initPhysicsWorld, updatePhysicsWorld, rigidBodies}
+export { RigidBody, initPhysicsWorld, updatePhysicsWorld, rigidBodies, addGroundShape, addWallShape };
