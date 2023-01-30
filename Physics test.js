@@ -5,7 +5,14 @@ import { OrbitControls } from 'https://cdn.skypack.dev/three@0.136/examples/jsm/
 import { createMaze, walls, goal, startPoint } from "./Maze.js";
 
 
-Ammo().then(main);
+function iniciar(){
+    Ammo().then(main);
+    console.log("entro al boton")
+    
+    document.getElementById("in").outerHTML=""
+    
+}
+document.getElementById("boton").addEventListener("click",()=>iniciar());
 let physicsWorld;
 let scene;
 let camera;
