@@ -2,7 +2,7 @@
 import * as THREE from "./node_modules/three/build/three.module.js";
 import { RigidBody, updatePhysicsWorld, rigidBodies, initPhysicsWorld } from "./Physics World.js";
 import { OrbitControls } from 'https://cdn.skypack.dev/three@0.136/examples/jsm/controls/OrbitControls.js';
-import { createMaze, walls, goal } from "./Maze.js";
+import { createMaze, walls, goal, startPoint } from "./Maze.js";
 
 
 Ammo().then(main);
@@ -25,15 +25,16 @@ function main() {
     initGraphicsWorld();
     tmpTransformation = new Ammo.btTransform();
     //rbCube.createBox(1, { x: 0, y: 3, z: 0 }, { x: 1, y: 1, z: 1 });
-    ball = createSphere({ x: 0, y: 15, z: 0 }, 0.2);
     
-    new RigidBody(ball, "sphere", 1);
     ground = createMaze();
     scene.add(ground);
     for (let i = 0; i < walls.length; i++) {
         new RigidBody(walls[i], "box", 0);
     }
     new RigidBody(ground, "ground", 0);
+    ball = createSphere(startPoint, 0.2);
+    
+    new RigidBody(ball, "sphere", 1);
     //rbGround.createBox(0, { x: 0, y: -5, z: 0 }, { x: 20, y: 2, z: 20 });
     requestAnimationFrame(render);
 
@@ -70,19 +71,19 @@ function main() {
 function rotate() {
     if (dPressed) {
         //ground.rotation.x += rotationSpeed;
-        ground.rotateX(rotationSpeed);
+        ground.rotateZ(-rotationSpeed);
     }
     if (aPressed) {
         //ground.rotation.x -= rotationSpeed;
-        ground.rotateX(-rotationSpeed);
+        ground.rotateZ(rotationSpeed);
     }
     if (sPressed) {
         //ground.rotation.z -= rotationSpeed;
-        ground.rotateZ(rotationSpeed);
+        ground.rotateX(rotationSpeed);
     }
     if (wPressed) {
         //ground.rotation.z += rotationSpeed;
-        ground.rotateZ(-rotationSpeed);
+        ground.rotateX(-rotationSpeed);
     }
 }
 
@@ -94,7 +95,7 @@ function win() {
     var dz = vector.z - ball.position.z;
 
     const distance = Math.sqrt( dx * dx + dy * dy + dz * dz );
-    if (distance < 1) {
+    if (distance < 0.5) {
         alert("victory");
         goal.position.x = -100;
         goal.position.y = -100;
@@ -107,7 +108,7 @@ function initGraphicsWorld() {
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
     camera.position.set(0, 20, 0);
-    camera.lookAt(new THREE.Vector3(0, 0, 0));
+    //camera.lookAt(new THREE.Vector3(0, 0, 0));
     const canvas = document.querySelector('#canvas'); //Get document's canvas
     renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: false });
     renderer.setPixelRatio(window.devicePixelRatio);
@@ -118,8 +119,6 @@ function initGraphicsWorld() {
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
     directionalLight.position.set(0, 2, 0);
     scene.add(directionalLight);
-    const helper = new THREE.CameraHelper(camera);
-    scene.add(helper);
     scene.background = createBgCube();
     renderer.render(scene, camera);
     controls = new OrbitControls(camera, renderer.domElement);

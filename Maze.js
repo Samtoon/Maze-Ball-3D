@@ -14,6 +14,7 @@ const mazeMap = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]];
 const mazeHeight = mazeMap.length;
 const walls = [];
+const startPoint = { x: 0, y: 0, z: 0 };
 const mazeWidth = mazeMap[0].length;
 const goalGeom = new THREE.CapsuleBufferGeometry(0.2, 0.2);
     const goalMaterial = new THREE.MeshPhongMaterial({ color: Math.random() * 0xffffff });
@@ -28,15 +29,14 @@ function createMaze() {
     const wallGeom = new THREE.BoxBufferGeometry(1, 1, 1,);
     const wallTexture = new THREE.TextureLoader().load('/src/textures/crate.gif');
     const wallMaterial = new THREE.MeshBasicMaterial({ map: wallTexture });
-    const startPoint = { x: 0, y: 0, z: 0 };
 
     for (let j = 0; j < mazeHeight; j++) {
         for (let i = 0; i < mazeWidth; i++) {
             switch (mazeMap[j][i]) {
                 case values.start:
-                    startPoint.x = i;
-                    startPoint.y = 3;
-                    startPoint.z = j;
+                    startPoint.x = (i - mazeWidth / 2) + 0.5;
+                    startPoint.y = 10;
+                    startPoint.z = (mazeHeight / 2 - j) - 0.5;
                     break;
                 case values.finish:
                     goal.position.x = (i - mazeWidth / 2) + 0.5;
@@ -64,4 +64,4 @@ function createMaze() {
     return maze;
 }
 
-export { createMaze, mazeHeight, mazeWidth, walls, goal };
+export { createMaze, mazeHeight, mazeWidth, walls, goal, startPoint };
